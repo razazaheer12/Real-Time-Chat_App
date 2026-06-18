@@ -1,0 +1,10 @@
+﻿export default function Avatar({ username, size = "md" }) {
+  const sizes = { sm: "w-7 h-7 text-xs", md: "w-9 h-9 text-sm", lg: "w-12 h-12 text-base" };
+  const initials = username?.slice(0, 2).toUpperCase() || "??";
+
+  return (
+    <div className={`${sizes[size]} rounded-full bg-violet-600 flex items-center justify-center text-white font-semibold`}>
+      {initials}
+    </div>
+  );
+}
