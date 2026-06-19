@@ -1,4 +1,4 @@
-import bcrypt from "bcryptjs";
+﻿import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
@@ -25,7 +25,7 @@ export const signup = async (req, res) => {
     const user = await User.create({ username, email, password: hashed });
 
     signToken(user._id, res);
-    res.status(201).json({ _id: user._id, username: user.username, email: user.email });
+    res.status(201).json({ _id: user._id, username: user.username, email: user.email, profilePic: user.profilePic });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -41,7 +41,7 @@ export const login = async (req, res) => {
     if (!valid) return res.status(400).json({ error: "Invalid credentials" });
 
     signToken(user._id, res);
-    res.json({ _id: user._id, username: user.username, email: user.email });
+    res.json({ _id: user._id, username: user.username, email: user.email, profilePic: user.profilePic });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -54,4 +54,20 @@ export const logout = (req, res) => {
 
 export const getMe = (req, res) => {
   res.json(req.user);
+};
+
+export const uploadProfilePic = async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { profilePic: req.file.path },
+      { new: true }
+    ).select("-password");
+
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };

@@ -1,26 +1,61 @@
-﻿import { useChatStore } from "../../store/useChatStore";
+﻿import { useRef, useState } from "react";
+import { useChatStore } from "../../store/useChatStore";
 import { useSocketStore } from "../../store/useSocketStore";
 import { useAuthStore } from "../../store/useAuthStore";
+import Avatar from "../shared/Avatar";
 
-// Yahan se bhi general ko khatam kar diya
 const ROOMS = ["gaming", "music", "tech", "random"];
 
 export default function Sidebar({ onClose }) {
   const { activeRoom, setActiveRoom } = useChatStore();
   const { onlineUsers } = useSocketStore();
-  const { user, logout } = useAuthStore();
+  const { user, logout, uploadProfilePic } = useAuthStore();
+  const fileInputRef = useRef(null);
+  const [uploading, setUploading] = useState(false);
 
   const handleRoomClick = (r) => {
     setActiveRoom(r);
     onClose?.();
   };
 
+  const handleFileSelect = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      await uploadProfilePic(file);
+    } catch (err) {
+      alert("Upload failed. Try again.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <aside className="w-72 md:w-64 h-full bg-slate-800 border-r border-white/10 flex flex-col">
       <div className="p-4 border-b border-white/10 flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-bold text-violet-400">💬 ChatApp</h2>
-          <p className="text-xs text-slate-400 mt-1">Hey, {user?.username}</p>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            className="relative group"
+            title="Change profile picture">
+            <Avatar username={user?.username} profilePic={user?.profilePic} size="md" />
+            <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition text-xs">
+              {uploading ? "..." : "📷"}
+            </div>
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileSelect}
+            className="hidden"
+          />
+          <div>
+            <h2 className="text-sm font-bold text-violet-400">💬 ChatApp</h2>
+            <p className="text-xs text-slate-400">{user?.username}</p>
+          </div>
         </div>
         <button
           onClick={onClose}
@@ -52,7 +87,7 @@ export default function Sidebar({ onClose }) {
         )}
         {onlineUsers.map((u) => (
           <div key={u.userId} className="flex items-center gap-2 py-1.5 px-1">
-            <span className="w-2 h-2 rounded-full bg-green-400 shrink-0"></span>
+            <Avatar username={u.username} profilePic={u.profilePic} size="sm" />
             <span className="text-sm text-slate-300 truncate">
               {u.username}
               {u.userId === user?._id && (

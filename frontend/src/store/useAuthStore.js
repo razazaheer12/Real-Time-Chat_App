@@ -30,4 +30,13 @@ export const useAuthStore = create((set) => ({
       set({ user: null });
     }
   },
+
+  uploadProfilePic: async (file) => {
+    const formData = new FormData();
+    formData.append("profilePic", file);
+    const res = await axios.post("/auth/upload-profile-pic", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    set({ user: res.data });
+  },
 }));
