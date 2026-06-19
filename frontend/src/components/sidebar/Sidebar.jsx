@@ -7,7 +7,7 @@ import Avatar from "../shared/Avatar";
 const ROOMS = ["gaming", "music", "tech", "random"];
 
 export default function Sidebar({ onClose }) {
-  const { activeRoom, setActiveRoom } = useChatStore();
+  const { activeRoom, chatMode, activeDmUser, setActiveRoom, setActiveDm } = useChatStore();
   const { onlineUsers } = useSocketStore();
   const { user, logout, uploadProfilePic } = useAuthStore();
   const fileInputRef = useRef(null);
@@ -15,6 +15,12 @@ export default function Sidebar({ onClose }) {
 
   const handleRoomClick = (r) => {
     setActiveRoom(r);
+    onClose?.();
+  };
+
+  const handleUserClick = (u) => {
+    if (u.userId === user?._id) return;
+    setActiveDm(u);
     onClose?.();
   };
 
@@ -70,7 +76,7 @@ export default function Sidebar({ onClose }) {
           <button key={r}
             onClick={() => handleRoomClick(r)}
             className={`w-full text-left px-3 py-2.5 rounded-lg mb-1 text-sm transition
-              ${activeRoom === r
+              ${chatMode === "room" && activeRoom === r
                 ? "bg-violet-600 text-white"
                 : "text-slate-300 hover:bg-white/10"}`}>
             # {r}
@@ -86,7 +92,14 @@ export default function Sidebar({ onClose }) {
           <p className="text-xs text-slate-500">No one online</p>
         )}
         {onlineUsers.map((u) => (
-          <div key={u.userId} className="flex items-center gap-2 py-1.5 px-1">
+          <button
+            key={u.userId}
+            onClick={() => handleUserClick(u)}
+            disabled={u.userId === user?._id}
+            className={`w-full flex items-center gap-2 py-2 px-2 rounded-lg mb-1 transition
+              ${chatMode === "dm" && activeDmUser?.userId === u.userId
+                ? "bg-violet-600"
+                : u.userId === user?._id ? "" : "hover:bg-white/10"}`}>
             <Avatar username={u.username} profilePic={u.profilePic} size="sm" />
             <span className="text-sm text-slate-300 truncate">
               {u.username}
@@ -94,7 +107,7 @@ export default function Sidebar({ onClose }) {
                 <span className="text-slate-500"> (you)</span>
               )}
             </span>
-          </div>
+          </button>
         ))}
       </div>
 

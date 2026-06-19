@@ -22,9 +22,25 @@ export const initSocket = (io) => {
     });
 
     socket.on("send-message", async ({ content, room, senderId }) => {
-      const msg = await Message.create({ sender: senderId, content, room });
+      const msg = await Message.create({ sender: senderId, content, room, type: "room" });
       const populated = await msg.populate("sender", "username profilePic");
       io.to(room).emit("new-message", populated);
+    });
+
+    socket.on("send-private-message", async ({ content, senderId, receiverId }) => {
+      const msg = await Message.create({
+        sender: senderId,
+        receiver: receiverId,
+        content,
+        type: "private",
+      });
+      const populated = await msg.populate("sender", "username profilePic");
+
+      const receiverData = onlineUsers.get(receiverId);
+      if (receiverData) {
+        io.to(receiverData.socketId).emit("new-private-message", populated);
+      }
+      socket.emit("new-private-message", populated);
     });
 
     socket.on("delete-message", async ({ messageId, room }) => {
