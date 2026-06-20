@@ -4,8 +4,6 @@
 
 **A full-stack real-time chat application built with the MERN stack and Socket.io**
 
-><img width="252" height="306" alt="image" src="https://github.com/user-attachments/assets/f83aa944-2483-4a6d-80f0-05662dd9ad17" />
-
 🔗 Instant messaging • 🏠 Multiple rooms • 💌 Private DMs • 🟢 Live presence • 🖼️ Profile uploads
 
 [![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Visit_App-7c3aed?style=for-the-badge)](https://real-time-chat-app-pi-lake.vercel.app)
