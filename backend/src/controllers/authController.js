@@ -2,14 +2,8 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
-const signToken = (userId, res) => {
-  const token = jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: "7d" });
-  res.cookie("jwt", token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-  });
+const generateToken = (userId) => {
+  return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
 
 export const signup = async (req, res) => {
@@ -24,8 +18,14 @@ export const signup = async (req, res) => {
     const hashed = await bcrypt.hash(password, 10);
     const user = await User.create({ username, email, password: hashed });
 
-    signToken(user._id, res);
-    res.status(201).json({ _id: user._id, username: user.username, email: user.email, profilePic: user.profilePic });
+    const token = generateToken(user._id);
+    res.status(201).json({
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+      profilePic: user.profilePic,
+      token,
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -40,15 +40,20 @@ export const login = async (req, res) => {
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) return res.status(400).json({ error: "Invalid credentials" });
 
-    signToken(user._id, res);
-    res.json({ _id: user._id, username: user.username, email: user.email, profilePic: user.profilePic });
+    const token = generateToken(user._id);
+    res.json({
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+      profilePic: user.profilePic,
+      token,
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
 export const logout = (req, res) => {
-  res.cookie("jwt", "", { maxAge: 0 });
   res.json({ message: "Logged out" });
 };
 
@@ -58,7 +63,15 @@ export const getMe = (req, res) => {
 
 export const uploadProfilePic = async (req, res) => {
   try {
-    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+    console.log("Upload request received. req.file:", req.file);
+    console.log("req.body:", req.body);
+
+    if (!req.file) {
+      console.log("ERROR: No file in request");
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+
+    console.log("File path from Cloudinary:", req.file.path);
 
     const user = await User.findByIdAndUpdate(
       req.user._id,
@@ -66,8 +79,11 @@ export const uploadProfilePic = async (req, res) => {
       { new: true }
     ).select("-password");
 
+    console.log("User updated successfully:", user.username);
     res.json(user);
   } catch (err) {
+    console.log("UPLOAD ERROR MESSAGE:", err.message);
+    console.log("UPLOAD ERROR STACK:", err.stack);
     res.status(500).json({ error: err.message });
   }
 };

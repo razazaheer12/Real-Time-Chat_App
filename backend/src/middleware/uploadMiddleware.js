@@ -2,6 +2,12 @@
 import multer from "multer";
 import cloudinary from "../config/cloudinary.js";
 
+console.log("Cloudinary config check:", {
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY ? "SET" : "MISSING",
+  api_secret: process.env.CLOUDINARY_API_SECRET ? "SET" : "MISSING",
+});
+
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {

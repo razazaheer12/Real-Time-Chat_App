@@ -7,23 +7,35 @@ export const useSocketStore = create((set, get) => ({
 
   connect: (userId) => {
     const existing = get().socket;
-    if (existing && existing.connected) return;
-    if (existing) existing.disconnect();
+    if (existing) {
+      existing.disconnect();
+      existing.removeAllListeners();
+    }
 
-    const socket = io("http://localhost:5000", {
+    const socket = io(import.meta.env.VITE_API_URL, {
       query: { userId },
       withCredentials: true,
+    });
+
+    socket.on("connect", () => {
+      set({ socket });
     });
 
     socket.on("online-users", (users) => {
       set({ onlineUsers: users });
     });
 
-    set({ socket });
+    socket.on("disconnect", () => {
+      set({ socket: null });
+    });
   },
 
   disconnect: () => {
-    get().socket?.disconnect();
+    const existing = get().socket;
+    if (existing) {
+      existing.disconnect();
+      existing.removeAllListeners();
+    }
     set({ socket: null, onlineUsers: [] });
   },
 }));

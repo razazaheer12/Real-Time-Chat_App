@@ -8,25 +8,33 @@ export const useAuthStore = create((set) => ({
   signup: async (data) => {
     set({ isLoading: true });
     const res = await axios.post("/auth/signup", data);
+    localStorage.setItem("chatapp_token", res.data.token);
     set({ user: res.data, isLoading: false });
   },
 
   login: async (data) => {
     set({ isLoading: true });
     const res = await axios.post("/auth/login", data);
+    localStorage.setItem("chatapp_token", res.data.token);
     set({ user: res.data, isLoading: false });
   },
 
   logout: async () => {
-    await axios.post("/auth/logout");
+    localStorage.removeItem("chatapp_token");
     set({ user: null });
   },
 
   checkAuth: async () => {
+    const token = localStorage.getItem("chatapp_token");
+    if (!token) {
+      set({ user: null });
+      return;
+    }
     try {
       const res = await axios.get("/auth/me");
       set({ user: res.data });
     } catch {
+      localStorage.removeItem("chatapp_token");
       set({ user: null });
     }
   },
