@@ -172,6 +172,12 @@ The app will be live at `http://localhost:5173` 🎉
 
 > 💡 Dark-themed, glassmorphism-inspired UI with violet accents, real-time message bubbles, and a responsive sidebar that adapts from desktop to mobile.
 
+> <img width="947" height="425" alt="image" src="https://github.com/user-attachments/assets/72316429-57da-41e3-98d5-793848936f32" />
+
+><img width="252" height="306" alt="image" src="https://github.com/user-attachments/assets/f83aa944-2483-4a6d-80f0-05662dd9ad17" />
+
+> 
+
 ---
 
 ## 🗺️ Roadmap
