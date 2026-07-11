@@ -7,6 +7,7 @@ import { connectDB } from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
 import roomRoutes from "./routes/roomRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 import { initSocket } from "./socket/socketHandler.js";
 
 dotenv.config();
@@ -25,6 +26,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/rooms", roomRoutes);
+app.use("/api/users", userRoutes);
 
 connectDB().then(() => {
   httpServer.listen(PORT, () => {
