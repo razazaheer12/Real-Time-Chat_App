@@ -1,8 +1,9 @@
-﻿import { useRef, useState } from "react";
+﻿import { useRef, useState, useEffect } from "react";
 import { useChatStore } from "../../store/useChatStore";
 import { useSocketStore } from "../../store/useSocketStore";
 import { useAuthStore } from "../../store/useAuthStore";
 import Avatar from "../shared/Avatar";
+import axios from "../../utils/axiosInstance";
 
 const ROOMS = ["gaming", "music", "tech", "random"];
 
@@ -12,6 +13,17 @@ export default function Sidebar({ onClose }) {
   const { user, logout, uploadProfilePic } = useAuthStore();
   const fileInputRef = useRef(null);
   const [uploading, setUploading] = useState(false);
+  const [allUsers, setAllUsers] = useState([]);
+
+  useEffect(() => {
+    axios.get("/users").then((r) => setAllUsers(r.data)).catch(() => {});
+  }, []);
+
+  const usersWithStatus = allUsers.map((u) => ({
+    ...u,
+    isOnline: onlineUsers.some((ou) => ou.userId === u._id),
+    profilePic: onlineUsers.find((ou) => ou.userId === u._id)?.profilePic || u.profilePic,
+  }));
 
   const handleRoomClick = (r) => {
     setActiveRoom(r);
@@ -19,8 +31,7 @@ export default function Sidebar({ onClose }) {
   };
 
   const handleUserClick = (u) => {
-    if (u.userId === user?._id) return;
-    setActiveDm(u);
+    setActiveDm({ userId: u._id, username: u.username, profilePic: u.profilePic });
     onClose?.();
   };
 
@@ -37,8 +48,11 @@ export default function Sidebar({ onClose }) {
     }
   };
 
-  const totalUnread = Object.values(unreadRooms).reduce((a, b) => a + b, 0) +
+  const totalUnread =
+    Object.values(unreadRooms).reduce((a, b) => a + b, 0) +
     Object.values(unreadDms).reduce((a, b) => a + b, 0);
+
+  const onlineCount = usersWithStatus.filter((u) => u.isOnline).length;
 
   return (
     <aside className="w-72 md:w-64 h-full bg-slate-800 border-r border-white/10 flex flex-col">
@@ -85,24 +99,28 @@ export default function Sidebar({ onClose }) {
 
       <div className="p-3 flex-1 overflow-y-auto">
         <p className="text-xs text-slate-400 uppercase tracking-widest mb-2">
-          Online — {onlineUsers.length}
+          Users — {onlineCount} online
         </p>
-        {onlineUsers.length === 0 && <p className="text-xs text-slate-500">No one online</p>}
-        {onlineUsers.map((u) => (
-          <button key={u.userId} onClick={() => handleUserClick(u)}
-            disabled={u.userId === user?._id}
+        {usersWithStatus.length === 0 && (
+          <p className="text-xs text-slate-500">No users found</p>
+        )}
+        {usersWithStatus.map((u) => (
+          <button key={u._id} onClick={() => handleUserClick(u)}
             className={`w-full flex items-center justify-between py-2 px-2 rounded-lg mb-1 transition
-              ${chatMode === "dm" && activeDmUser?.userId === u.userId ? "bg-violet-600" : u.userId === user?._id ? "" : "hover:bg-white/10"}`}>
+              ${chatMode === "dm" && activeDmUser?.userId === u._id
+                ? "bg-violet-600"
+                : "hover:bg-white/10"}`}>
             <div className="flex items-center gap-2">
-              <Avatar username={u.username} profilePic={u.profilePic} size="sm" />
-              <span className="text-sm text-slate-300 truncate">
-                {u.username}
-                {u.userId === user?._id && <span className="text-slate-500"> (you)</span>}
-              </span>
+              <div className="relative">
+                <Avatar username={u.username} profilePic={u.profilePic} size="sm" />
+                <span className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-slate-800
+                  ${u.isOnline ? "bg-green-400" : "bg-orange-400"}`} />
+              </div>
+              <span className="text-sm text-slate-300 truncate">{u.username}</span>
             </div>
-            {unreadDms[u.userId] > 0 && (
+            {unreadDms[u._id] > 0 && (
               <span className="bg-red-500 text-white text-xs font-bold rounded-full min-w-5 h-5 px-1 flex items-center justify-center">
-                {unreadDms[u.userId] > 99 ? "99+" : unreadDms[u.userId]}
+                {unreadDms[u._id] > 99 ? "99+" : unreadDms[u._id]}
               </span>
             )}
           </button>
