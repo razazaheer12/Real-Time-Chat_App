@@ -21,21 +21,21 @@ export const initSocket = (io) => {
       socket.emit("joined", roomName);
     });
 
-    socket.on("send-message", async ({ content, room, senderId }) => {
-      const msg = await Message.create({ sender: senderId, content, room, type: "room" });
+    socket.on("send-message", async ({ content, image, room, senderId }) => {
+      const msg = await Message.create({ sender: senderId, content, image, room, type: "room" });
       const populated = await msg.populate("sender", "username profilePic");
       io.to(room).emit("new-message", populated);
     });
 
-    socket.on("send-private-message", async ({ content, senderId, receiverId }) => {
+    socket.on("send-private-message", async ({ content, image, senderId, receiverId }) => {
       const msg = await Message.create({
         sender: senderId,
         receiver: receiverId,
         content,
+        image,
         type: "private",
       });
       const populated = await msg.populate("sender", "username profilePic");
-
       const receiverData = onlineUsers.get(receiverId);
       if (receiverData) {
         io.to(receiverData.socketId).emit("new-private-message", populated);

@@ -16,7 +16,7 @@ export default function MessageBubble({ msg, isOwn }) {
       await axios.delete(`/messages/${msg._id}`);
       socket.emit("delete-message", { messageId: msg._id, room: activeRoom });
       setMessages((prev) => prev.filter((m) => m._id !== msg._id));
-    } catch (err) {
+    } catch {
       alert("Could not delete message");
     } finally {
       setDeleting(false);
@@ -39,17 +39,28 @@ export default function MessageBubble({ msg, isOwn }) {
             🗑️
           </button>
         )}
-        <div className={`max-w-[80%] sm:max-w-xs lg:max-w-md px-3 md:px-4 py-2 rounded-2xl text-sm
+        <div className={`max-w-[80%] sm:max-w-xs lg:max-w-md rounded-2xl text-sm overflow-hidden
           ${isOwn
             ? "bg-violet-600 text-white rounded-br-sm"
             : "bg-slate-700 text-slate-100 rounded-bl-sm"}`}>
-          {!isOwn && (
-            <p className="text-xs text-violet-400 font-medium mb-0.5">
-              {msg.sender?.username}
+          {!isOwn && msg.sender?.username && (
+            <p className="text-xs text-violet-400 font-medium px-3 pt-2">
+              {msg.sender.username}
             </p>
           )}
-          <p className="break-words">{msg.content}</p>
-          <p className="text-xs opacity-50 mt-0.5 text-right">
+          {msg.image && (
+            <a href={msg.image} target="_blank" rel="noopener noreferrer">
+              <img
+                src={msg.image}
+                alt="shared"
+                className="max-w-full max-h-60 object-cover cursor-pointer hover:opacity-90 transition"
+              />
+            </a>
+          )}
+          {msg.content && (
+            <p className="break-words px-3 py-2">{msg.content}</p>
+          )}
+          <p className={`text-xs opacity-50 pb-1.5 pr-3 text-right ${!msg.content && msg.image ? "px-3" : ""}`}>
             {new Date(msg.createdAt).toLocaleTimeString([], {
               hour: "2-digit",
               minute: "2-digit"

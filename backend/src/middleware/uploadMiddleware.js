@@ -2,14 +2,8 @@
 import multer from "multer";
 import cloudinary from "../config/cloudinary.js";
 
-console.log("Cloudinary config check:", {
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY ? "SET" : "MISSING",
-  api_secret: process.env.CLOUDINARY_API_SECRET ? "SET" : "MISSING",
-});
-
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
+const profileStorage = new CloudinaryStorage({
+  cloudinary,
   params: {
     folder: "chat-app-avatars",
     allowed_formats: ["jpg", "jpeg", "png", "webp"],
@@ -17,6 +11,14 @@ const storage = new CloudinaryStorage({
   },
 });
 
-const upload = multer({ storage });
+const messageImageStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "chat-app-messages",
+    allowed_formats: ["jpg", "jpeg", "png", "webp", "gif"],
+    transformation: [{ width: 800, crop: "limit" }],
+  },
+});
 
-export default upload;
+export const uploadProfile = multer({ storage: profileStorage });
+export const uploadMessageImage = multer({ storage: messageImageStorage });
