@@ -2,6 +2,7 @@
 import { useChatStore } from "../../store/useChatStore";
 import { useSocketStore } from "../../store/useSocketStore";
 import { useAuthStore } from "../../store/useAuthStore";
+import { useNotificationStore } from "../../store/useNotificationStore";
 import Avatar from "../shared/Avatar";
 import axios from "../../utils/axiosInstance";
 
@@ -11,6 +12,7 @@ export default function Sidebar({ onClose }) {
   const { activeRoom, chatMode, activeDmUser, setActiveRoom, setActiveDm, unreadRooms, unreadDms } = useChatStore();
   const { onlineUsers } = useSocketStore();
   const { user, logout, uploadProfilePic } = useAuthStore();
+  const { soundEnabled, browserNotifEnabled, toggleSound, requestBrowserPermission } = useNotificationStore();
   const fileInputRef = useRef(null);
   const [uploading, setUploading] = useState(false);
   const [allUsers, setAllUsers] = useState([]);
@@ -78,7 +80,21 @@ export default function Sidebar({ onClose }) {
             <p className="text-xs text-slate-400">{user?.username}</p>
           </div>
         </div>
-        <button onClick={onClose} className="md:hidden text-slate-400 hover:text-white text-xl px-2">✕</button>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={toggleSound}
+            title={soundEnabled ? "Mute sound" : "Unmute sound"}
+            className="text-lg hover:scale-110 transition">
+            {soundEnabled ? "🔔" : "🔕"}
+          </button>
+          <button
+            onClick={requestBrowserPermission}
+            title={browserNotifEnabled ? "Notifications on" : "Enable notifications"}
+            className={`text-lg hover:scale-110 transition ${browserNotifEnabled ? "opacity-100" : "opacity-40"}`}>
+            🖥️
+          </button>
+          <button onClick={onClose} className="md:hidden text-slate-400 hover:text-white text-xl px-1">✕</button>
+        </div>
       </div>
 
       <div className="p-3 border-b border-white/10">

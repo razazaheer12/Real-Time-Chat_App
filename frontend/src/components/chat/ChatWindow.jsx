@@ -2,6 +2,7 @@
 import { useChatStore } from "../../store/useChatStore";
 import { useSocketStore } from "../../store/useSocketStore";
 import { useAuthStore } from "../../store/useAuthStore";
+import { useNotificationStore } from "../../store/useNotificationStore";
 import MessageBubble from "./MessageBubble";
 import MessageInput from "./MessageInput";
 import TypingIndicator from "./TypingIndicator";
@@ -19,6 +20,7 @@ export default function ChatWindow({ onMenuClick }) {
   const addUnreadDm = useChatStore((s) => s.addUnreadDm);
   const socket = useSocketStore((s) => s.socket);
   const user = useAuthStore((s) => s.user);
+  const { playSound, showBrowserNotif } = useNotificationStore();
   const bottom = useRef(null);
   const [typingUser, setTypingUser] = useState(null);
   const [clearing, setClearing] = useState(false);
@@ -28,11 +30,19 @@ export default function ChatWindow({ onMenuClick }) {
 
     const handleNewMessage = (msg) => {
       const { activeRoom: currentRoom, chatMode: currentMode } = useChatStore.getState();
+      const myId = useAuthStore.getState().user?._id;
+      if (msg.sender._id === myId) return;
+
       if (currentMode === "room" && currentRoom === msg.room) {
         setMessages((prev) => [...prev, msg]);
       } else {
         addUnreadRoom(msg.room);
       }
+      playSound();
+      showBrowserNotif(
+        `#${msg.room}`,
+        `${msg.sender.username}: ${msg.content || "📎 Image"}`
+      );
     };
 
     const handleNewPrivateMessage = (msg) => {
@@ -40,6 +50,15 @@ export default function ChatWindow({ onMenuClick }) {
       const myId = useAuthStore.getState().user?._id;
       const senderId = msg.sender._id;
       const otherId = senderId === myId ? msg.receiver : senderId;
+
+      if (senderId !== myId) {
+        playSound();
+        showBrowserNotif(
+          `${msg.sender.username}`,
+          msg.content || "📎 Image"
+        );
+      }
+
       if (currentMode === "dm" && currentDm?.userId === otherId) {
         setMessages((prev) => [...prev, msg]);
       } else if (senderId !== myId) {

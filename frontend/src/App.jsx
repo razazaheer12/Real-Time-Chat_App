@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAuthStore } from "./store/useAuthStore";
 import { useSocketStore } from "./store/useSocketStore";
 import { useChatStore } from "./store/useChatStore";
+import { useNotificationStore } from "./store/useNotificationStore";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import ChatPage from "./pages/ChatPage";
@@ -12,9 +13,7 @@ export default function App() {
   const { connect, disconnect } = useSocketStore();
   const unreadRooms = useChatStore((s) => s.unreadRooms);
   const unreadDms = useChatStore((s) => s.unreadDms);
-  const connectedUserId = typeof window !== "undefined"
-    ? window._connectedUserId
-    : null;
+  const { unlockAudio } = useNotificationStore();
 
   const totalUnread =
     Object.values(unreadRooms).reduce((a, b) => a + b, 0) +
@@ -32,6 +31,20 @@ export default function App() {
   useEffect(() => {
     document.title = totalUnread > 0 ? `(${totalUnread}) ChatApp` : "ChatApp";
   }, [totalUnread]);
+
+  useEffect(() => {
+    const unlock = () => {
+      unlockAudio();
+      window.removeEventListener("click", unlock);
+      window.removeEventListener("keydown", unlock);
+    };
+    window.addEventListener("click", unlock);
+    window.addEventListener("keydown", unlock);
+    return () => {
+      window.removeEventListener("click", unlock);
+      window.removeEventListener("keydown", unlock);
+    };
+  }, []);
 
   return (
     <BrowserRouter>
