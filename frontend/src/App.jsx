@@ -1,4 +1,4 @@
-﻿import { useEffect } from "react";
+﻿import { useEffect, useRef } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAuthStore } from "./store/useAuthStore";
 import { useSocketStore } from "./store/useSocketStore";
@@ -14,6 +14,7 @@ export default function App() {
   const unreadRooms = useChatStore((s) => s.unreadRooms);
   const unreadDms = useChatStore((s) => s.unreadDms);
   const { unlockAudio } = useNotificationStore();
+  const connectedRef = useRef(null);
 
   const totalUnread =
     Object.values(unreadRooms).reduce((a, b) => a + b, 0) +
@@ -24,8 +25,13 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (user?._id) connect(user._id);
-    else disconnect();
+    if (user?._id && connectedRef.current !== user._id) {
+      connectedRef.current = user._id;
+      connect(user._id);
+    } else if (!user) {
+      connectedRef.current = null;
+      disconnect();
+    }
   }, [user?._id]);
 
   useEffect(() => {

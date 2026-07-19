@@ -16,25 +16,14 @@ export const initSocket = (io) => {
       }
     }
 
-    socket.on("join-room", (roomName) => {
-      socket.join(roomName);
-      socket.emit("joined", roomName);
-    });
-
     socket.on("send-message", async ({ content, image, room, senderId }) => {
       const msg = await Message.create({ sender: senderId, content, image, room, type: "room" });
       const populated = await msg.populate("sender", "username profilePic");
-      io.to(room).emit("new-message", populated);
+      io.emit("new-message", populated);
     });
 
     socket.on("send-private-message", async ({ content, image, senderId, receiverId }) => {
-      const msg = await Message.create({
-        sender: senderId,
-        receiver: receiverId,
-        content,
-        image,
-        type: "private",
-      });
+      const msg = await Message.create({ sender: senderId, receiver: receiverId, content, image, type: "private" });
       const populated = await msg.populate("sender", "username profilePic");
       const receiverData = onlineUsers.get(receiverId);
       if (receiverData) {
@@ -43,20 +32,30 @@ export const initSocket = (io) => {
       socket.emit("new-private-message", populated);
     });
 
-    socket.on("delete-message", async ({ messageId, room }) => {
-      io.to(room).emit("message-deleted", messageId);
+    socket.on("dm-typing", ({ receiverId, username }) => {
+      const receiverData = onlineUsers.get(receiverId);
+      if (receiverData) io.to(receiverData.socketId).emit("dm-user-typing", username);
+    });
+
+    socket.on("dm-stop-typing", ({ receiverId }) => {
+      const receiverData = onlineUsers.get(receiverId);
+      if (receiverData) io.to(receiverData.socketId).emit("dm-user-stop-typing");
+    });
+
+    socket.on("delete-message", ({ messageId }) => {
+      io.emit("message-deleted", messageId);
     });
 
     socket.on("clear-room", (room) => {
-      io.to(room).emit("room-cleared", room);
+      io.emit("room-cleared", room);
     });
 
     socket.on("typing", ({ room, username }) => {
-      socket.to(room).emit("user-typing", username);
+      socket.broadcast.emit("user-typing", { room, username });
     });
 
     socket.on("stop-typing", ({ room }) => {
-      socket.to(room).emit("user-stop-typing");
+      socket.broadcast.emit("user-stop-typing", room);
     });
 
     socket.on("disconnect", async () => {

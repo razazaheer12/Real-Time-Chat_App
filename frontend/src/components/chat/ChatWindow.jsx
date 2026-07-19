@@ -8,8 +8,6 @@ import MessageInput from "./MessageInput";
 import TypingIndicator from "./TypingIndicator";
 import axios from "../../utils/axiosInstance";
 
-const ALL_ROOMS = ["gaming", "music", "tech", "random"];
-
 export default function ChatWindow({ onMenuClick }) {
   const messages = useChatStore((s) => s.messages);
   const setMessages = useChatStore((s) => s.setMessages);
@@ -29,57 +27,69 @@ export default function ChatWindow({ onMenuClick }) {
     if (!socket) return;
 
     const handleNewMessage = (msg) => {
-      const { activeRoom: currentRoom, chatMode: currentMode } = useChatStore.getState();
+      const state = useChatStore.getState();
       const myId = useAuthStore.getState().user?._id;
-      if (msg.sender._id === myId) return;
+      const isMyMessage = msg.sender._id === myId;
+      const isActiveRoom = state.chatMode === "room" && state.activeRoom === msg.room;
 
-      if (currentMode === "room" && currentRoom === msg.room) {
+      if (isActiveRoom) {
         setMessages((prev) => [...prev, msg]);
-      } else {
+      } else if (!isMyMessage) {
         addUnreadRoom(msg.room);
+        playSound();
+        showBrowserNotif(`#${msg.room}`, `${msg.sender.username}: ${msg.content || "📎 Image"}`);
       }
-      playSound();
-      showBrowserNotif(
-        `#${msg.room}`,
-        `${msg.sender.username}: ${msg.content || "📎 Image"}`
-      );
     };
 
     const handleNewPrivateMessage = (msg) => {
-      const { activeDmUser: currentDm, chatMode: currentMode } = useChatStore.getState();
+      const state = useChatStore.getState();
       const myId = useAuthStore.getState().user?._id;
       const senderId = msg.sender._id;
-      const otherId = senderId === myId ? msg.receiver : senderId;
+      const isMyMessage = senderId === myId;
+      const otherId = isMyMessage ? msg.receiver : senderId;
+      const isActiveDm = state.chatMode === "dm" && state.activeDmUser?.userId === otherId;
 
-      if (senderId !== myId) {
-        playSound();
-        showBrowserNotif(
-          `${msg.sender.username}`,
-          msg.content || "📎 Image"
-        );
-      }
-
-      if (currentMode === "dm" && currentDm?.userId === otherId) {
+      if (isActiveDm) {
         setMessages((prev) => [...prev, msg]);
-      } else if (senderId !== myId) {
+      } else if (!isMyMessage) {
         addUnreadDm(senderId);
+        playSound();
+        showBrowserNotif(`${msg.sender.username}`, msg.content || "📎 Image");
       }
     };
 
-    const handleTyping = (username) => setTypingUser(username);
-    const handleStopTyping = () => setTypingUser(null);
+    const handleTyping = ({ room, username }) => {
+      const state = useChatStore.getState();
+      if (state.chatMode === "room" && state.activeRoom === room) {
+        setTypingUser(username);
+      }
+    };
+
+    const handleStopTyping = (room) => {
+      const state = useChatStore.getState();
+      if (state.chatMode === "room" && state.activeRoom === room) {
+        setTypingUser(null);
+      }
+    };
+
+    const handleDmTyping = (username) => setTypingUser(username);
+    const handleDmStopTyping = () => setTypingUser(null);
+
     const handleMessageDeleted = (messageId) => {
       setMessages((prev) => prev.filter((m) => m._id !== messageId));
     };
+
     const handleRoomCleared = (room) => {
-      const { activeRoom: currentRoom, chatMode: currentMode } = useChatStore.getState();
-      if (currentMode === "room" && room === currentRoom) setMessages([]);
+      const state = useChatStore.getState();
+      if (state.chatMode === "room" && room === state.activeRoom) setMessages([]);
     };
 
     socket.off("new-message");
     socket.off("new-private-message");
     socket.off("user-typing");
     socket.off("user-stop-typing");
+    socket.off("dm-user-typing");
+    socket.off("dm-user-stop-typing");
     socket.off("message-deleted");
     socket.off("room-cleared");
 
@@ -87,16 +97,18 @@ export default function ChatWindow({ onMenuClick }) {
     socket.on("new-private-message", handleNewPrivateMessage);
     socket.on("user-typing", handleTyping);
     socket.on("user-stop-typing", handleStopTyping);
+    socket.on("dm-user-typing", handleDmTyping);
+    socket.on("dm-user-stop-typing", handleDmStopTyping);
     socket.on("message-deleted", handleMessageDeleted);
     socket.on("room-cleared", handleRoomCleared);
-
-    ALL_ROOMS.forEach((room) => socket.emit("join-room", room));
 
     return () => {
       socket.off("new-message");
       socket.off("new-private-message");
       socket.off("user-typing");
       socket.off("user-stop-typing");
+      socket.off("dm-user-typing");
+      socket.off("dm-user-stop-typing");
       socket.off("message-deleted");
       socket.off("room-cleared");
     };
@@ -134,10 +146,13 @@ export default function ChatWindow({ onMenuClick }) {
   };
 
   return (
-    <div className="flex-1 flex flex-col w-full min-w-0">
-      <div className="px-4 md:px-6 py-3 md:py-4 border-b border-white/10 bg-slate-800 flex items-center justify-between gap-3">
+    <div className="flex-1 flex flex-col w-full min-w-0 h-full overflow-hidden">
+      <div className="px-4 md:px-6 py-3 md:py-4 border-b border-white/10 bg-slate-800 flex items-center justify-between gap-3 shrink-0">
         <div className="flex items-center gap-3">
-          <button onClick={onMenuClick} className="md:hidden text-slate-300 hover:text-white text-xl">☰</button>
+          <button onClick={onMenuClick}
+            className="md:hidden text-slate-300 hover:text-white text-xl shrink-0 w-8 h-8 flex items-center justify-center">
+            ☰
+          </button>
           {chatMode === "dm" && activeDmUser ? (
             <div>
               <h2 className="font-semibold text-white text-sm md:text-base">{activeDmUser.username}</h2>
@@ -152,8 +167,8 @@ export default function ChatWindow({ onMenuClick }) {
         </div>
         {chatMode === "room" && (
           <button onClick={handleClearRoom} disabled={clearing}
-            className="text-xs text-slate-400 hover:text-red-400 transition px-2 py-1 rounded-lg hover:bg-white/5 disabled:opacity-50">
-            {clearing ? "Clearing..." : "🗑️ Clear Room"}
+            className="text-xs text-slate-400 hover:text-red-400 transition px-2 py-1 rounded-lg hover:bg-white/5 disabled:opacity-50 shrink-0">
+            {clearing ? "Clearing..." : "🗑️ Clear"}
           </button>
         )}
       </div>
