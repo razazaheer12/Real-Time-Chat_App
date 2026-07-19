@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { useSocketStore } from "../../store/useSocketStore";
 import { useChatStore } from "../../store/useChatStore";
 import axios from "../../utils/axiosInstance";
@@ -29,17 +29,17 @@ export default function MessageBubble({ msg, isOwn }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <div className="flex items-end gap-1">
+      <div className="flex items-end gap-1 max-w-[85%] sm:max-w-[75%] md:max-w-[65%]">
         {isOwn && hovered && (
           <button
             onClick={handleDelete}
             disabled={deleting}
-            className="text-slate-500 hover:text-red-400 transition text-xs mb-1 px-1"
+            className="text-slate-500 hover:text-red-400 transition text-xs mb-1 px-1 shrink-0"
             title="Delete message">
             🗑️
           </button>
         )}
-        <div className={`max-w-[80%] sm:max-w-xs lg:max-w-md rounded-2xl text-sm overflow-hidden
+        <div className={`w-full rounded-2xl text-sm overflow-hidden
           ${isOwn
             ? "bg-violet-600 text-white rounded-br-sm"
             : "bg-slate-700 text-slate-100 rounded-bl-sm"}`}>
@@ -58,9 +58,9 @@ export default function MessageBubble({ msg, isOwn }) {
             </a>
           )}
           {msg.content && (
-            <p className="break-words px-3 py-2">{msg.content}</p>
+            <p className="break-words whitespace-pre-wrap px-3 py-2">{msg.content}</p>
           )}
-          <p className={`text-xs opacity-50 pb-1.5 pr-3 text-right ${!msg.content && msg.image ? "px-3" : ""}`}>
+          <p className={`text-xs opacity-50 pb-1.5 pr-3 text-right`}>
             {new Date(msg.createdAt).toLocaleTimeString([], {
               hour: "2-digit",
               minute: "2-digit"
