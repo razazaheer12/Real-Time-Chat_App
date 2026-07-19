@@ -1,4 +1,3 @@
-@'
 import { useState, useRef } from "react";
 import { useSocketStore } from "../../store/useSocketStore";
 import { useAuthStore } from "../../store/useAuthStore";
@@ -20,12 +19,21 @@ export default function MessageInput() {
 
   const handleChange = (e) => {
     setText(e.target.value);
-    if (!socket || chatMode !== "room" || !activeRoom) return;
-    socket.emit("typing", { room: activeRoom, username: user?.username });
-    clearTimeout(typingTimeout.current);
-    typingTimeout.current = setTimeout(() => {
-      socket.emit("stop-typing", { room: activeRoom });
-    }, 1500);
+    if (!socket) return;
+
+    if (chatMode === "room" && activeRoom) {
+      socket.emit("typing", { room: activeRoom, username: user?.username });
+      clearTimeout(typingTimeout.current);
+      typingTimeout.current = setTimeout(() => {
+        socket.emit("stop-typing", { room: activeRoom });
+      }, 1500);
+    } else if (chatMode === "dm" && activeDmUser) {
+      socket.emit("dm-typing", { receiverId: activeDmUser.userId, username: user?.username });
+      clearTimeout(typingTimeout.current);
+      typingTimeout.current = setTimeout(() => {
+        socket.emit("dm-stop-typing", { receiverId: activeDmUser.userId });
+      }, 1500);
+    }
   };
 
   const handleFileSelect = (e) => {
@@ -76,6 +84,8 @@ export default function MessageInput() {
           senderId: user._id,
           receiverId: activeDmUser.userId,
         });
+        socket.emit("dm-stop-typing", { receiverId: activeDmUser.userId });
+        clearTimeout(typingTimeout.current);
       }
 
       setText("");
@@ -113,13 +123,7 @@ export default function MessageInput() {
           title="Attach image">
           📎
         </button>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          onChange={handleFileSelect}
-          className="hidden"
-        />
+        <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileSelect} className="hidden" />
         <input
           value={text}
           onChange={handleChange}
@@ -138,4 +142,3 @@ export default function MessageInput() {
     </div>
   );
 }
-'@ | Set-Content -Path "src\components\chat\MessageInput.jsx" -Encoding UTF8
