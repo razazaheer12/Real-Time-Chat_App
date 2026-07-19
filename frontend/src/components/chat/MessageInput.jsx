@@ -1,4 +1,5 @@
-﻿import { useState, useRef } from "react";
+@'
+import { useState, useRef } from "react";
 import { useSocketStore } from "../../store/useSocketStore";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useChatStore } from "../../store/useChatStore";
@@ -79,7 +80,7 @@ export default function MessageInput() {
 
       setText("");
       removeImage();
-    } catch (err) {
+    } catch {
       alert("Failed to send. Try again.");
     } finally {
       setUploading(false);
@@ -91,11 +92,11 @@ export default function MessageInput() {
     : `Message #${activeRoom}`;
 
   return (
-    <div className="border-t border-white/10 bg-slate-800">
+    <div className="border-t border-white/10 bg-slate-800 shrink-0">
       {imagePreview && (
         <div className="px-3 pt-3 flex items-center gap-2">
           <div className="relative inline-block">
-            <img src={imagePreview} alt="preview" className="h-20 w-20 object-cover rounded-lg border border-white/20" />
+            <img src={imagePreview} alt="preview" className="h-16 w-16 object-cover rounded-lg border border-white/20" />
             <button
               onClick={removeImage}
               className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600">
@@ -104,11 +105,11 @@ export default function MessageInput() {
           </div>
         </div>
       )}
-      <div className="p-3 md:p-4 flex gap-2 items-center">
+      <div className="p-3 flex gap-2 items-center">
         <button
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading}
-          className="text-slate-400 hover:text-violet-400 transition text-xl shrink-0"
+          className="text-slate-400 hover:text-violet-400 transition shrink-0 w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/10"
           title="Attach image">
           📎
         </button>
@@ -125,15 +126,16 @@ export default function MessageInput() {
           onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && send()}
           placeholder={placeholder}
           disabled={uploading}
-          className="flex-1 bg-slate-700 rounded-xl px-3 md:px-4 py-2.5 md:py-3 text-sm md:text-base text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 min-w-0 disabled:opacity-50"
+          className="flex-1 bg-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 min-w-0 disabled:opacity-50"
         />
         <button
           onClick={send}
           disabled={uploading || (!text.trim() && !imageFile)}
-          className="bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white px-4 md:px-5 rounded-xl font-medium transition text-sm md:text-base shrink-0">
-          {uploading ? "..." : "Send"}
+          className="bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white rounded-xl font-medium transition shrink-0 w-10 h-10 flex items-center justify-center">
+          {uploading ? "⏳" : "➤"}
         </button>
       </div>
     </div>
   );
 }
+'@ | Set-Content -Path "src\components\chat\MessageInput.jsx" -Encoding UTF8
