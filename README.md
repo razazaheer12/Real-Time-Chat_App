@@ -72,8 +72,12 @@ Built from the ground up with the **MERN stack** (MongoDB, Express, React, Node.
 
 <img width="458" height="306" alt="image" src="https://github.com/user-attachments/assets/31fd9a1a-1f92-4634-b4ae-7633309621f7" />
 
+
+### Workflow  
+
 Users authenticate through the React frontend using JWT-based authentication handled by the Node.js/Express backend. After login, REST APIs and Socket.io enable secure real-time messaging, while MongoDB Atlas stores all application data. The frontend is deployed on Vercel, and the backend with Socket.io runs on Hugging Face Spaces (Docker).
 
+---
 
 ## 📂 Project Structure
 
