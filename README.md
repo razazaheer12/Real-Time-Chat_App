@@ -68,6 +68,13 @@ Built from the ground up with the **MERN stack** (MongoDB, Express, React, Node.
 
 ---
 
+## ⚡ System Architecture Representation Diagram ARD ( Real-Time ChatApp )
+
+<img width="458" height="306" alt="image" src="https://github.com/user-attachments/assets/31fd9a1a-1f92-4634-b4ae-7633309621f7" />
+
+Users authenticate through the React frontend using JWT-based authentication handled by the Node.js/Express backend. After login, REST APIs and Socket.io enable secure real-time messaging, while MongoDB Atlas stores all application data. The frontend is deployed on Vercel, and the backend with Socket.io runs on Hugging Face Spaces (Docker).
+
+
 ## 📂 Project Structure
 
 ```
@@ -88,7 +95,7 @@ Real-Time-Chat_App/
     ├── src/
     │   ├── components/      # Auth, chat, sidebar & shared UI components
     │   ├── pages/            # Login, Signup, Chat pages
-    │   ├── store/             # Zustand stores (auth, chat, socket)
+    │   ├── store/             # Zustand stores (useAuthStore, useSocketStore, useChatStore)
     │   ├── utils/             # Axios instance config
     │   └── App.jsx
     └── package.json
