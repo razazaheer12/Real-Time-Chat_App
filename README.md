@@ -2,9 +2,9 @@
 
 <div align="center">
 
-**A full-stack real-time chat application built with the MERN stack and Socket.io**
+**A production-grade, full-stack real-time chat application built with the MERN stack, Socket.io & Zustand**
 
-🔗 Instant messaging • 🏠 Multiple rooms • 💌 Private DMs • 🟢 Live presence • 🖼️ Profile uploads
+🔗 Instant messaging • 🏠 Topic Rooms • 💌 Private DMs • 🟢 Live Presence • 🔔 Sound Alerts • 🖼️ Media Sharing
 
 [![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Visit_App-7c3aed?style=for-the-badge)](https://real-time-chat-app-pi-lake.vercel.app)
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github)](https://github.com/razazaheer12/Real-Time-Chat_App)
@@ -15,11 +15,11 @@
 
 ## 🌟 Overview
 
-**Real-Time Chat App** is a modern, production-ready messaging platform where users can sign up, join topic-based chat rooms, send private direct messages, see who's online in real time, and personalize their profile — all wrapped in a sleek, mobile-responsive dark UI.
+**Real-Time Chat App** is a modern, high-performance messaging platform that provides a WhatsApp Web-level real-time communication experience. Users can sign up, join topic-based rooms, send private direct messages, share images/files, track online status, and receive audio/browser notification alerts — all wrapped in a sleek, glassmorphism-inspired dark UI.
 
-Built from the ground up with the **MERN stack** (MongoDB, Express, React, Node.js) and powered by **Socket.io** for instant, bidirectional communication.
+Built from the ground up with the **MERN stack** (MongoDB, Express, React, Node.js), powered by **Socket.io** for low-latency bidirectional communication, and managed via **Zustand** with robust connection-lifecycle guards.
 
-### ✨ [**👉 Try it Live**](https://real-time-chat-app-pi-lake.vercel.app)
+### ✨ [**👉 Try Live Application**](https://real-time-chat-app-pi-lake.vercel.app)
 
 ---
 
