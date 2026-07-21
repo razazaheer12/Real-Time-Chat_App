@@ -44,27 +44,27 @@ Built from the ground up with the **MERN stack** (MongoDB, Express, React, Node.
 ## 🛠️ Tech Stack
 
 ### Frontend
-- ⚛️ **React** (Vite) — fast, modern UI
-- 🎨 **Tailwind CSS** — utility-first responsive styling
-- 🐻 **Zustand** — lightweight global state management
-- 🔌 **Socket.io-client** — real-time client connection
-- 🧭 **React Router** — client-side routing
+- ⚛️ **React** (Vite) — Fast, reactive UI
+- 🎨 **Tailwind CSS** — Modern utility-first styling & dark mode UI
+- 🐻 **Zustand** — Lightweight global state management & socket connectivity store
+- 🔌 **Socket.io-client** — Real-time WebSockets communication layer
+- 🧭 **React Router** — Client-side navigation
 
 ### Backend
-- 🟢 **Node.js** + **Express** — REST API server
-- 🔌 **Socket.io** — WebSocket-based real-time engine
-- 🍃 **MongoDB Atlas** + **Mongoose** — cloud-hosted database & ODM
-- 🔑 **JWT** — stateless authentication
-- 🔒 **bcrypt.js** — password hashing
-- ☁️ **Cloudinary** — image hosting for profile pictures
+- 🟢 **Node.js** + **Express** — RESTful API architecture
+- 🔌 **Socket.io** — WebSocket server engine with room broadcasting
+- 🍃 **MongoDB Atlas** + **Mongoose** — Cloud database & data modelling
+- 🔑 **JSON Web Tokens (JWT)** — Stateless HTTP & socket authentication
+- 🔒 **bcrypt.js** — Secure password encryption
+- ☁️ **Cloudinary** — Cloud media management for image sharing & profiles
 
-### Deployment
-| Layer | Platform |
+### Deployment Architecture
+| Layer | Infrastructure / Platform |
 |---|---|
-| Frontend | **Vercel** |
-| Backend + Socket.io | **Hugging Face Spaces** (Docker) |
-| Database | **MongoDB Atlas** |
-| Image Storage | **Cloudinary** |
+| **Frontend** | **Vercel** |
+| **Backend & Socket Server** | **Hugging Face Spaces** (Docker Containerized) / **Render** |
+| **Database** | **MongoDB Atlas** |
+| **Media Hosting** | **Cloudinary** |
 
 ---
 
