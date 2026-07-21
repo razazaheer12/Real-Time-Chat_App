@@ -1,4 +1,4 @@
-# 💬 Real-Time Chat App
+# 💬 Real-Time Chat App (MERN STACK)
 
 <div align="center">
 
