@@ -27,16 +27,17 @@ Built from the ground up with the **MERN stack** (MongoDB, Express, React, Node.
 
 | Feature | Description |
 |---|---|
-| 🔐 **JWT Authentication** | Secure signup & login with hashed passwords (bcrypt) and token-based sessions |
-| ⚡ **Real-Time Messaging** | Instant message delivery via Socket.io — zero refresh needed |
-| 🏠 **Multiple Chat Rooms** | Jump between topic-based rooms: `gaming`, `music`, `tech`, `random` |
-| 💌 **Private Messaging (DMs)** | One-on-one private conversations between users |
-| 🟢 **Online/Offline Presence** | See exactly who's online in real time, with live avatars |
-| ⌨️ **Typing Indicator** | Know when someone's typing a reply |
-| 🕘 **Message History** | All messages persisted in MongoDB and loaded on login |
-| 🗑️ **Message Management** | Delete your own messages, or clear an entire room |
-| 🖼️ **Profile Picture Upload** | Upload and update avatars via Cloudinary integration |
-| 📱 **Fully Responsive** | Seamless experience across mobile, tablet, and desktop |
+| 🔐 **JWT Authentication** | Secure signup & login with bcrypt password hashing, token sessions & password show/hide toggle |
+| ⚡ **Real-Time Messaging** | Instant message delivery via Socket.io with strict multi-tab & cross-browser synchronization |
+| 🏠 **Multiple Chat Rooms** | Topic-based group chat channels: `#gaming`, `#music`, `#tech`, `#random` |
+| 💌 **Private DMs** | Direct one-on-one real-time private conversations |
+| 🟢 **Live Presence Tracking** | Real-time 🟢 Online / 🟠 Offline status indicators and active user counts |
+| ⌨️ **Typing Indicators** | Live typing status across both topic rooms and direct messaging |
+| 🔔 **Unread Badges & Alerts** | Dynamic unread message notification badges + crisp audio sound alerts |
+| 🖼️ **Media & File Sharing** | Real-time image and media file upload/sharing directly inside chat windows |
+| 🕘 **Message History** | Persistent conversation storage powered by MongoDB Atlas, loaded seamlessly on login |
+| 🗑️ **Message Management** | Delete specific individual messages or clear entire room histories |
+| 👤 **Profile Management** | Custom profile picture/avatar uploads integrated with Cloudinary |
 
 ---
 
