@@ -182,28 +182,18 @@ The app will be live at `http://localhost:5173` 🎉
 
 ## 📸 Preview
 
-> 💡 Dark-themed, glassmorphism-inspired UI with violet accents, real-time message bubbles, and a responsive sidebar that adapts from desktop to mobile.
+> 💡 Dark-themed, glassmorphism-inspired responsive interface featuring interactive chat bubbles, unread counter badges, and live connection logs.
 
 ### Login Page
 <img width="959" height="436" alt="Screenshot 2026-07-20 235506" src="https://github.com/user-attachments/assets/b8ebf5ea-0c10-407b-a17d-59d81587e5e5" />
 
-### Chat Rooms Preview 
+### Multi-Chat Rooms Preview 
 <img width="959" height="437" alt="Screenshot 2026-07-20 235903" src="https://github.com/user-attachments/assets/fe3969bb-c0a2-4f91-8402-122a8e4ce290" />
 
-### DM / Private Chat Preview
+### Private Direct Messaging DM Chat Preview
 <img width="959" height="436" alt="image" src="https://github.com/user-attachments/assets/109e8325-7cef-42c3-bb00-040287527c59" />
 
-
 > 
-
----
-
-## 🗺️ Roadmap
-
-- [ ] 🔔 Unread message notification badges
-- [ ] 😄 Message reactions (emoji)
-- [ ] 📎 File/image sharing in chat
-- [ ] 🔍 Message search
 
 ---
 
